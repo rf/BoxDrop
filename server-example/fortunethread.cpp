@@ -48,8 +48,23 @@
          emit error(tcpSocket.error());
          return;
      }
-     text += "\n";
-     tcpSocket.write(text.toStdString().c_str());
+     QString clientAddress = tcpSocket.peerAddress().toString();
+     qDebug() << "New connection from " << clientAddress;
+     while(tcpSocket.waitForReadyRead(5000)){
+     	QString input = QString(tcpSocket.readLine());
+	input = input.replace("\n","");
+	input = input.trimmed();
+	qDebug() <<input;
+	if(input == QString("fortune")){
+	     qDebug() << "sent fortune" << text << "to" << clientAddress;
+	     text += "\n";
+	     tcpSocket.write(text.toStdString().c_str());
+	     break;
+	}
+     }
      tcpSocket.disconnectFromHost();
-     tcpSocket.waitForDisconnected();
+	 if(tcpSocket.state() != QAbstractSocket::UnconnectedState){
+		 tcpSocket.waitForDisconnected();
+	 }
+    qDebug() << clientAddress << " disconnected";
  }
