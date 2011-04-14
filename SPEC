@@ -1,0 +1,28 @@
+We need plugin frameworks for:
+   - Object storage (s3, db4, hbase, filesystem, etc)
+   - Encryption (aes, blowfish, etc)
+   - Compression (zlib, bzip2, pngcrush, flac, etc)
+   - Diffing (diff, courgette, bsdiff, etc)
+
+We have the following object types:
+   - User
+      - Passwords / public keys
+      - ref to root tree
+   - Tree
+      - references to meta objects (files) or
+      - references to other tree objects for subfolders
+   - Meta
+      - filename
+      - mimetype
+      - last modified
+      - perms
+      - list of frames
+         - date of change
+         - type of data (full file or delta)
+         - reference to a blob
+   - Blob
+      - binary data
+      - contains no other information
+Each of these will have some kindof index so they can reference eachother;
+just an autoincrementing int would suffice.
+
