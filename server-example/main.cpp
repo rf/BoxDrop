@@ -44,8 +44,7 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include "dialog.h"
-
+#include "fortuneserver.h"
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv,false);

@@ -1,9 +1,7 @@
  HEADERS 	= fortuneserver.h \
-                 fortunethread.h \
-		 dialog.h
+                 fortunethread.h 
  SOURCES 	= fortuneserver.cpp \
                  fortunethread.cpp \
-		 dialog.cpp \
                  main.cpp
  QT           += network
 
