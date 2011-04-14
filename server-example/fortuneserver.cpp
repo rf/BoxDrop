@@ -36,7 +36,7 @@
  #include "fortunethread.h"
 
  #include <stdlib.h>
-
+#include <QtDebug>
  FortuneServer::FortuneServer(QObject *parent)
      : QTcpServer(parent)
  {
