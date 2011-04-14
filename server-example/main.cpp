@@ -1,49 +1,60 @@
- /****************************************************************************
- **
- ** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
- ** All rights reserved.
- ** Contact: Nokia Corporation (qt-info@nokia.com)
- **
- ** This file is part of the examples of the Qt Toolkit.
- **
- ** $QT_BEGIN_LICENSE:BSD$
- ** You may use this file under the terms of the BSD license as follows:
- **
- ** "Redistribution and use in source and binary forms, with or without
- ** modification, are permitted provided that the following conditions are
- ** met:
- **   * Redistrllowing disclaimer in
- **     the documentation and/or other materials provided with the
- **     distribution.
- **   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
- **     the names of its contributors may be used to endorse or promote
- **     products derived from this software without specific prior written
- **     permission.
- **
- ** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- ** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- ** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- ** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- ** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- ** SPECIAL, EXEMPLARY, OR CONSER TORT
- ** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
- ** $QT_END_LICENSE$
- **
- ****************************************************************************/
+/****************************************************************************
+ *  **
+ *   ** Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ *    ** All rights reserved.
+ *     ** Contact: Nokia Corporation (qt-info@nokia.com)
+ *      **
+ *       ** This file is part of the examples of the Qt Toolkit.
+ *        **
+ *         ** $QT_BEGIN_LICENSE:LGPL$
+ *          ** Commercial Usage
+ *           ** Licensees holding valid Qt Commercial licenses may use this file in
+ *            ** accordance with the Qt Commercial License Agreement provided with the
+ *             ** Software or, alternatively, in accordance with the terms contained in
+ *              ** a written agreement between you and Nokia.
+ *               **
+ *                ** GNU Lesser General Public License Usage
+ *                 ** Alternatively, this file may be used under the terms of the GNU Lesser
+ *                  ** General Public License version 2.1 as published by the Free Software
+ *                   ** Foundation and appearing in the file LICENSE.LGPL included in the
+ *                    ** packaging of this file.  Please review the following information to
+ *                     ** ensure the GNU Lesser General Public License version 2.1 requirements
+ *                      ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+ *                       **
+ *                        ** In addition, as a special exception, Nokia gives you certain additional
+ *                         ** rights.  These rights are described in the Nokia Qt LGPL Exception
+ *                          ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+ *                           **
+ *                            ** GNU General Public License Usage
+ *                             ** Alternatively, this file may be used under the terms of the GNU
+ *                              ** General Public License version 3.0 as published by the Free Software
+ *                               ** Foundation and appearing in the file LICENSE.GPL included in the
+ *                                ** packaging of this file.  Please review the following information to
+ *                                 ** ensure the GNU General Public License version 3.0 requirements will be
+ *                                  ** met: http://www.gnu.org/copyleft/gpl.html.
+ *                                   **
+ *                                    ** If you have questions regarding the use of this file, please contact
+ *                                     ** Nokia at qt-info@nokia.com.
+ *                                      ** $QT_END_LICENSE$
+ *                                       **
+ *                                        ****************************************************************************/
 
- #include <QApplication>
- #include <QtCore>
+#include <QApplication>
+#include <QtCore>
 
- #include <stdlib.h>
+#include <stdlib.h>
 #include <iostream>
-using namespace std;
+#include "dialog.h"
 
-
- int main(int argc, char *argv[])
- {
-     QApplication app(argc, argv);
-     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-     std::cout << "Server started!\n";
-     return app.exec();
- }
+int main(int argc, char *argv[])
+{
+	QApplication app(argc, argv,false);
+	FortuneServer server;	
+	if(server.listen(QHostAddress::Any,1234)){
+		std::cout << "server listening on " << server.serverPort() << " \n";	
+	}else{
+		std::cerr << "Error: " << server.errorString().toStdString() << "\n";
+	}
+	qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+	return app.exec();
+}
