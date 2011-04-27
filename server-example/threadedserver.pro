@@ -1,8 +1,10 @@
  HEADERS 	= server.h \
-                 thread.h 
+                 thread.h \
+		  message.h
  SOURCES 	= server.cpp \
                  thread.cpp \
-                 main.cpp
+                 main.cpp \
+		 message.cpp
  QT           += network
 
  # install

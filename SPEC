@@ -26,3 +26,9 @@ We have the following object types:
 Each of these will have some kindof index so they can reference eachother;
 just an autoincrementing int would suffice.
 
+
+Currently a Message consists of the following data:
+	first line is the size of the rest of the message (excluding this line)
+	second line is the message type
+	
+	

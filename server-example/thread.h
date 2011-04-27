@@ -37,6 +37,8 @@
  #include <QThread>
  #include <QTcpSocket>
 
+#define TIMEOUT_MILLISECONDS 5000
+
  class FortuneThread : public QThread
  {
      Q_OBJECT
