@@ -43,27 +43,27 @@
 
 void FortuneThread::run()
 {
-	QTcpSocket tcpSocket;
-	if (!tcpSocket.setSocketDescriptor(socketDescriptor)) {
-		emit error(tcpSocket.error());
+	tcpSocket = new QTcpSocket;
+	if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
+		emit error(tcpSocket->error());
 		return;
 	}
-	QString clientAddress = tcpSocket.peerAddress().toString();
+	QString clientAddress = tcpSocket->peerAddress().toString();
 	qDebug() << "New connection from " << clientAddress;
 
 	//wait for first line
-	if(!tcpSocket.waitForReadyRead(5000)){
+	if(!tcpSocket->waitForReadyRead(5000)){
 		qDebug() << clientAddress << " timed out before sending LENGTH";
-		tcpSocket.disconnectFromHost();
+		tcpSocket->disconnectFromHost();
 		return;
 	}
 	//first line should be message length, see SPEC
 	bool* convertedOK = new bool; 
-	QString firstLine = tcpSocket.readLine().trimmed();
+	QString firstLine = tcpSocket->readLine().trimmed();
 	int numBytes = QString(firstLine).toInt(convertedOK);
 	if(! *convertedOK){
 		qDebug() << clientAddress << " send a bad length: " << firstLine;
-		tcpSocket.disconnectFromHost();
+		tcpSocket->disconnectFromHost();
 		delete convertedOK;
 		return;
 	}
@@ -72,10 +72,10 @@ void FortuneThread::run()
 	//now, we read the full message. We know how long it is, so we keep
 	// reading until we've read that many bytes
 	QByteArray packet;
-	while( ( packet.size() < numBytes) && tcpSocket.waitForReadyRead(TIMEOUT_MILLISECONDS)) {
+	while( ( packet.size() < numBytes) && tcpSocket->waitForReadyRead(TIMEOUT_MILLISECONDS)) {
 		// at most, we read in the number of bytes difference between our packet so far and what we expect
 		// and a +1 for the null byte at the end
-		QByteArray input = tcpSocket.readLine(numBytes - packet.size() + 1);
+		QByteArray input = tcpSocket->readLine(numBytes - packet.size() + 1);
 		packet += input;
 	}
 
@@ -85,14 +85,26 @@ void FortuneThread::run()
 	if(!msg){
 		qDebug() << "Invalid packet format";	
 	}else if (msg->getType() == PING){
-		qDebug() << "Packet was a ping";
+		processPing();
+	}else if (msg->getType() == NEW_FILE){
+		processNewFile(msg);
 	}else{
 		qDebug() << "Message has unrecognized type" << msg->getType() << "but was created successfully";
 	}
-
-	tcpSocket.disconnectFromHost();
-	if(tcpSocket.state() != QAbstractSocket::UnconnectedState){
-		tcpSocket.waitForDisconnected();
+	delete msg;
+	tcpSocket->disconnectFromHost();
+	if(tcpSocket->state() != QAbstractSocket::UnconnectedState){
+		tcpSocket->waitForDisconnected();
 	}
 	qDebug() << clientAddress << " disconnected";
+	delete tcpSocket;
+}
+
+void FortuneThread::processPing(){
+	qDebug() << "Packet was a ping";
+}
+
+void FortuneThread::processNewFile(Message *msg){
+	qDebug() << "Packet was a new file addition";	
+	
 }

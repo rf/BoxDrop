@@ -36,6 +36,7 @@
 
  #include <QThread>
  #include <QTcpSocket>
+ #include "message.h"
 
 #define TIMEOUT_MILLISECONDS 5000
 
@@ -47,12 +48,15 @@
      FortuneThread(int socketDescriptor, const QString &fortune, QObject *parent);
 
      void run();
-
+     void processPing();
+     void processNewFile(Message *msg);
+     
  signals:
      void error(QTcpSocket::SocketError socketError);
 
  private:
      int socketDescriptor;
+     QTcpSocket *tcpSocket;
      QString text;
  };
 

@@ -4,18 +4,21 @@
 
 typedef enum MessageType_t 
 {
-	PING
+	PING,
+	NEW_FILE
 } MessageType ;
 
 class Message{
 
 public:
-	Message();
+	Message(int size);
 	~Message();
 	static Message *generateMessage(QString str);
 	MessageType getType();
+
 private:
 	 MessageType type;
+	 int size;
 
 
 };
