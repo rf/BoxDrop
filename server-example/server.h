@@ -38,12 +38,12 @@
  #include <QStringList>
  #include <QTcpServer>
 
- class FortuneServer : public QTcpServer
+ class Server : public QTcpServer
  {
      Q_OBJECT
 
  public:
-     FortuneServer(QObject *parent = 0);
+     Server(QObject *parent = 0);
 
  protected:
      void incomingConnection(int socketDescriptor);

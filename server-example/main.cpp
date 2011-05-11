@@ -48,7 +48,7 @@
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv,false);
-	FortuneServer server;	
+	Server server;	
 	if(server.listen(QHostAddress::Any,1234)){
 		std::cout << "server listening on " << server.serverPort() << " \n";	
 	}else{

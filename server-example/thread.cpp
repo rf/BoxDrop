@@ -36,12 +36,12 @@
 #include "message.h"
 #include <QtNetwork>
 
-	FortuneThread::FortuneThread(int socketDescriptor, const QString &fortune, QObject *parent)
+	Thread::Thread(int socketDescriptor, const QString &fortune, QObject *parent)
 : QThread(parent), socketDescriptor(socketDescriptor), text(fortune)
 {
 }
 
-void FortuneThread::run()
+void Thread::run()
 {
 	tcpSocket = new QTcpSocket;
 	if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
@@ -100,11 +100,11 @@ void FortuneThread::run()
 	delete tcpSocket;
 }
 
-void FortuneThread::processPing(){
+void Thread::processPing(){
 	qDebug() << "Packet was a ping";
 }
 
-void FortuneThread::processNewFile(Message *msg){
+void Thread::processNewFile(Message *msg){
 	qDebug() << "Packet was a new file addition";	
 	
 }
