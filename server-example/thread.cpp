@@ -36,8 +36,13 @@
 #include "message.h"
 #include <QtNetwork>
 
+<<<<<<< HEAD
 	Thread::Thread(int socketDescriptor, QObject *parent)
 : QThread(parent), socketDescriptor(socketDescriptor)
+=======
+	Thread::Thread(int socketDescriptor, const QString &fortune, QObject *parent)
+: QThread(parent), socketDescriptor(socketDescriptor), text(fortune)
+>>>>>>> c563414cb0379741cf29c7657dbb225b2929663c
 {
 }
 

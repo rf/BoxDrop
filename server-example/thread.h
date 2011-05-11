@@ -45,7 +45,11 @@
      Q_OBJECT
 
  public:
+<<<<<<< HEAD
      Thread(int socketDescriptor, QObject *parent);
+=======
+     Thread(int socketDescriptor, const QString &fortune, QObject *parent);
+>>>>>>> c563414cb0379741cf29c7657dbb225b2929663c
 
      void run();
      void processPing();
