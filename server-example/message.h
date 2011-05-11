@@ -15,10 +15,9 @@ public:
 	~Message();
 	static Message *generateMessage(QString str);
 	MessageType getType();
+	QStringList body;
 
 private:
 	 MessageType type;
 	 int size;
-
-
 };

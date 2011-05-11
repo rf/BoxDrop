@@ -25,6 +25,9 @@ Message *Message::generateMessage(QString str){
 	}
 
 	if(goodType){
+		for(int i =1; i < lines.size(); i++){
+			msg->body += lines.at(i);
+		}
 		return msg;
 	}else{
 		delete msg;

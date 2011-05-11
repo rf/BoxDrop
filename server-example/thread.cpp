@@ -104,6 +104,15 @@ void Thread::processPing(){
 }
 
 void Thread::processNewFile(Message *msg){
-	qDebug() << "Packet was a new file addition";	
-	
+	//first line is the filename
+	QString fileName = msg->body.at(0);
+	qDebug() << "Packet was a new file addition, adding file"<<fileName;	
+	QFile file(fileName);
+	file.open(QIODevice::WriteOnly | QIODevice::Text);
+	QTextStream out(&file);
+	for(int i =1; i < msg->body.size(); i++){
+		out << msg->body.at(i) << "\n";
+	}
+	file.close(); 
+
 }
