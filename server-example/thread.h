@@ -40,12 +40,12 @@
 
 #define TIMEOUT_MILLISECONDS 5000
 
- class FortuneThread : public QThread
+ class Thread : public QThread
  {
      Q_OBJECT
 
  public:
-     FortuneThread(int socketDescriptor, const QString &fortune, QObject *parent);
+     Thread(int socketDescriptor, QObject *parent);
 
      void run();
      void processPing();
