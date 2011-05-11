@@ -40,20 +40,11 @@
  Server::Server(QObject *parent)
      : QTcpServer(parent)
  {
-<<<<<<< HEAD
-=======
-
->>>>>>> c563414cb0379741cf29c7657dbb225b2929663c
  }
 
  void Server::incomingConnection(int socketDescriptor)
  {
-<<<<<<< HEAD
      Thread *thread = new Thread(socketDescriptor, this);
-=======
-     QString fortune = fortunes.at(qrand() % fortunes.size());
-     Thread *thread = new Thread(socketDescriptor, fortune, this);
->>>>>>> c563414cb0379741cf29c7657dbb225b2929663c
      connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
      thread->start();
  }
