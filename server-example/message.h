@@ -1,12 +1,7 @@
 #pragma once
 #include <QtCore>
+#include "defs.h"
 
-
-typedef enum MessageType_t 
-{
-	PING,
-	NEW_FILE
-} MessageType ;
 
 class Message{
 

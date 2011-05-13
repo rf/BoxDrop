@@ -3,6 +3,7 @@ We need plugin frameworks for:
    - Encryption (aes, blowfish, etc)
    - Compression (zlib, bzip2, pngcrush, flac, etc)
    - Diffing (diff, courgette, bsdiff, etc)
+	- http://code.google.com/p/google-diff-match-patch/
 
 We have the following object types:
    - User
