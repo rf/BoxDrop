@@ -47,11 +47,13 @@ int Server::sigtermFd[2];
 : QTcpServer(parent)
 {
 	fileManager = manager;
-	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd))
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd)){
 		qFatal("Couldn't create HUP socketpair");
+	}
 
-	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd)){
 		qFatal("Couldn't create TERM socketpair");
+	}
 	snHup = new QSocketNotifier(sighupFd[1], QSocketNotifier::Read, this);
 	connect(snHup, SIGNAL(activated(int)), this, SLOT(handleSigHup()));
 	snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
