@@ -103,8 +103,7 @@ void Thread::run()
 		tcpSocket->waitForDisconnected();
 	}
 	qDebug() << clientAddress << " disconnected";
-	delete tcpSocket;
-	delete user;
+
 }
 
 void Thread::processPing(){
@@ -120,5 +119,12 @@ void Thread::processNewFile(Message *msg){
 		contents +=  msg->body.at(i) + "\n";
 	}
 	fileManager->addFile(*user,filename,contents);
+
+}
+
+Thread::~Thread(){
+	delete user;
+	delete tcpSocket;
+	//tcpSocket->deleteLater();
 
 }

@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 	//we're going to use the filesystem backend by default, for testing
 	FileSystemBackend *backend = new FileSystemBackend();
 	Server server(backend);	
+	setup_unix_signal_handlers();
 	if(server.listen(QHostAddress::Any,1234)){
 		std::cout << "server listening on " << server.serverPort() << " \n";	
 	}else{

@@ -1,4 +1,4 @@
- /****************************************************************************
+/****************************************************************************
  **
  ** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
  ** All rights reserved.
@@ -32,26 +32,64 @@
  **
  ****************************************************************************/
 
- #ifndef FORTUNESERVER_H
- #define FORTUNESERVER_H
+#ifndef FORTUNESERVER_H
+#define FORTUNESERVER_H
 
- #include <QStringList>
- #include <QTcpServer>
- #include "filestorage.h"
+#include <QStringList>
+#include <QTcpServer>
+#include <QSocketNotifier>
+#include "filestorage.h"
+#include <signal.h>
 
- class Server : public QTcpServer
- {
-     Q_OBJECT
+class Server : public QTcpServer
+{
+	Q_OBJECT
 
- public:
-     Server( FileStorageManager *manager, QObject *parent = 0);
+	public:
+		Server( FileStorageManager *manager, QObject *parent = 0);
+		virtual ~Server();
+		// Unix signal handlers.
+		static void hupSignalHandler(int unused);
+		static void termSignalHandler(int unused);
 
- protected:
-     void incomingConnection(int socketDescriptor);
+	public slots:
+		// Qt signal handlers.
+		void handleSigHup();
+		void handleSigTerm();
 
- private:
+	protected:
+		void incomingConnection(int socketDescriptor);
 
-     FileStorageManager *fileManager;
- };
+	private:
 
- #endif
+		FileStorageManager *fileManager;
+
+
+		static int sighupFd[2];
+		static int sigtermFd[2];
+
+		QSocketNotifier *snHup;
+		QSocketNotifier *snTerm;
+};
+static int setup_unix_signal_handlers()
+{
+	struct sigaction hup, term;
+
+	hup.sa_handler = Server::hupSignalHandler;
+	sigemptyset(&hup.sa_mask);
+	hup.sa_flags = 0;
+	hup.sa_flags |= SA_RESTART;
+
+	if (sigaction(SIGHUP, &hup, 0) > 0)
+		return 1;
+
+	term.sa_handler = Server::termSignalHandler;
+	sigemptyset(&term.sa_mask);
+	term.sa_flags |= SA_RESTART;
+
+	if (sigaction(SIGTERM, &term, 0) > 0)
+		return 2;
+
+	return 0;
+}
+#endif

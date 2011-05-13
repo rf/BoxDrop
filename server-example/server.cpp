@@ -1,4 +1,4 @@
- /****************************************************************************
+/****************************************************************************
  **
  ** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
  ** All rights reserved.
@@ -32,20 +32,81 @@
  **
  ****************************************************************************/
 
- #include "server.h"
- #include "thread.h"
-
- #include <stdlib.h>
+#include "server.h"
+#include "thread.h"
+#include <sys/socket.h>
+#include "signal.h"
+#include <stdlib.h>
 #include <QtDebug>
- Server::Server( FileStorageManager *manager, QObject *parent)
-     : QTcpServer(parent)
- {
-	 fileManager = manager;
- }
+#include <QApplication>
 
- void Server::incomingConnection(int socketDescriptor)
- {
-     Thread *thread = new Thread(socketDescriptor, fileManager,this);
-     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-     thread->start();
- }
+//needed to not get an undefined reference to static members
+int Server::sighupFd[2];
+int Server::sigtermFd[2];
+	Server::Server( FileStorageManager *manager, QObject *parent)
+: QTcpServer(parent)
+{
+	fileManager = manager;
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd))
+		qFatal("Couldn't create HUP socketpair");
+
+	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd))
+		qFatal("Couldn't create TERM socketpair");
+	snHup = new QSocketNotifier(sighupFd[1], QSocketNotifier::Read, this);
+	connect(snHup, SIGNAL(activated(int)), this, SLOT(handleSigHup()));
+	snTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
+	connect(snTerm, SIGNAL(activated(int)), this, SLOT(handleSigTerm()));
+}
+
+
+void Server::incomingConnection(int socketDescriptor)
+{
+	Thread *thread = new Thread(socketDescriptor, fileManager,this);
+	connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+	thread->start();
+}
+
+void Server::hupSignalHandler(int)
+{
+	char a = 1;
+	::write(sighupFd[0], &a, sizeof(a));
+}
+
+void Server::termSignalHandler(int)
+{
+	char a = 1;
+	::write(sigtermFd[0], &a, sizeof(a));
+}
+
+
+void Server::handleSigTerm()
+{
+	snTerm->setEnabled(false);
+	char tmp;
+	::read(sigtermFd[1], &tmp, sizeof(tmp));
+
+	// do Qt stuff
+	qDebug() << "Got SIGTERM, exiting";
+	close();
+	QApplication::exit();
+	snTerm->setEnabled(true);
+}
+
+void Server::handleSigHup()
+{
+	snHup->setEnabled(false);
+	char tmp;
+	::read(sighupFd[1], &tmp, sizeof(tmp));
+
+	// do Qt stuff
+	qDebug() << "Got SIGHUP,exiting";
+	close();
+	QApplication::exit();
+	snHup->setEnabled(true);
+}
+
+Server::~Server(){
+	delete fileManager;
+	delete snHup;
+	delete snTerm;
+}

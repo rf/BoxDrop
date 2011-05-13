@@ -47,7 +47,7 @@
 
  public:
      Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent);
-
+     virtual ~Thread();
      void run();
      void processPing();
      void processNewFile(Message *msg);
