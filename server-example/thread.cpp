@@ -43,11 +43,11 @@
 : QThread(parent), socketDescriptor(socketDescriptor)
 {
 	fileManager = manager;
+	user = UserManager::loginUser("username","password");
 }
 
 void Thread::run()
 {
-	User user = UserManager::loginUser("username","password");
 
 	tcpSocket = new QTcpSocket;
 	if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
@@ -104,6 +104,7 @@ void Thread::run()
 	}
 	qDebug() << clientAddress << " disconnected";
 	delete tcpSocket;
+	delete user;
 }
 
 void Thread::processPing(){
@@ -112,14 +113,12 @@ void Thread::processPing(){
 
 void Thread::processNewFile(Message *msg){
 	//first line is the filename
-	QString fileName = msg->body.at(0);
-	qDebug() << "Packet was a new file addition, adding file"<<fileName;	
-	QFile file(fileName);
-	file.open(QIODevice::WriteOnly | QIODevice::Text);
-	QTextStream out(&file);
+	QString filename = msg->body.at(0);
+	qDebug() << "Packet was a new file addition, adding file"<<filename;	
+	QString contents = "";
 	for(int i =1; i < msg->body.size(); i++){
-		out << msg->body.at(i) << "\n";
+		contents +=  msg->body.at(i) + "\n";
 	}
-	file.close(); 
+	fileManager->addFile(*user,filename,contents);
 
 }

@@ -10,7 +10,7 @@
 
  public:
 	UserManager();
-	static 	User loginUser(QString username, QString password);
+	static 	User *loginUser(QString username, QString password);
  protected:
  private:
 

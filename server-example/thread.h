@@ -60,6 +60,7 @@
      QTcpSocket *tcpSocket;
      QString text;
      FileStorageManager *fileManager;
+     User *user;
  };
 
  #endif

@@ -4,8 +4,8 @@ UserManager::UserManager(){
 
 }
 
-User UserManager::loginUser(QString username, QString password){
+User *UserManager::loginUser(QString username, QString password){
 
-	User usr("jarek");
+	User *usr = new User("jarek");
 	return usr;
 }
