@@ -37,18 +37,21 @@
 
  #include <QStringList>
  #include <QTcpServer>
+ #include "filestorage.h"
 
  class Server : public QTcpServer
  {
      Q_OBJECT
 
  public:
-     Server(QObject *parent = 0);
+     Server( FileStorageManager *manager, QObject *parent = 0);
 
  protected:
      void incomingConnection(int socketDescriptor);
 
  private:
+
+     FileStorageManager *fileManager;
  };
 
  #endif

@@ -37,14 +37,15 @@
 
  #include <stdlib.h>
 #include <QtDebug>
- Server::Server(QObject *parent)
+ Server::Server( FileStorageManager *manager, QObject *parent)
      : QTcpServer(parent)
  {
+	 fileManager = manager;
  }
 
  void Server::incomingConnection(int socketDescriptor)
  {
-     Thread *thread = new Thread(socketDescriptor, this);
+     Thread *thread = new Thread(socketDescriptor, fileManager,this);
      connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
      thread->start();
  }

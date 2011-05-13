@@ -34,14 +34,21 @@
 
 #include "thread.h"
 #include "message.h"
+#include "usermanager.h"
+#include "user.h"
+
 #include <QtNetwork>
-	Thread::Thread(int socketDescriptor, QObject *parent)
+
+	Thread::Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent)
 : QThread(parent), socketDescriptor(socketDescriptor)
 {
+	fileManager = manager;
 }
 
 void Thread::run()
 {
+	User user = UserManager::loginUser("username","password");
+
 	tcpSocket = new QTcpSocket;
 	if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
 		emit error(tcpSocket->error());

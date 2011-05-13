@@ -4,15 +4,21 @@
  *
  */ 
 #include "defs.h"
+#include "user.h"
+#include <QString>
+#include <QHash>
 #pragma once
+
  class FileStorageManager
  {
 
  public:
-	virtual ~FileStorageManager() =0;
-	virtual bool addFile(QString filename, QString contents) =0;
-	virtual bool deleteFile(QString filename) =0;
-	virtual bool modifyFile(QString filename, QString patch, PatchType patchType) =0;
+	inline virtual ~FileStorageManager() {};
+	virtual bool addFile(User user, QString filename, QString contents) =0;
+	virtual bool deleteFile(User user, QString filename) =0;
+	virtual bool modifyFile(User user, QString filename, QString patch, PatchType patchType) =0;
+	virtual QHash<QString,QString> getFiles(User user) =0;
+
  protected:
  private:
 

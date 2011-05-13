@@ -3,13 +3,18 @@
 		 message.h \
 		 user.h \
 		 usermanager.h \
-		 defs.h
+		 defs.h \
+		 filestorage.h \
+		 storage_backends/filesystem.h
+
  SOURCES 	= server.cpp \
                  thread.cpp \
                  main.cpp \
 		 message.cpp \
 		 user.cpp \
-		 usermanager.cpp
+		 usermanager.cpp \
+		 storage_backends/filesystem.cpp 
+
  QT           += network
 
  # install

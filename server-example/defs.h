@@ -12,3 +12,6 @@ typedef enum PatchType_t
 	GOOGLE_DIFF
 
 } PatchType;
+
+#define TIMEOUT_MILLISECONDS 5000
+

@@ -37,15 +37,16 @@
  #include <QThread>
  #include <QTcpSocket>
  #include "message.h"
+ #include "filestorage.h"
+ #include "defs.h"
 
-#define TIMEOUT_MILLISECONDS 5000
 
  class Thread : public QThread
  {
      Q_OBJECT
 
  public:
-     Thread(int socketDescriptor, QObject *parent);
+     Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent);
 
      void run();
      void processPing();
@@ -58,6 +59,7 @@
      int socketDescriptor;
      QTcpSocket *tcpSocket;
      QString text;
+     FileStorageManager *fileManager;
  };
 
  #endif

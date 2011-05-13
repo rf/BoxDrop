@@ -45,10 +45,15 @@
 #include <stdlib.h>
 #include <iostream>
 #include "server.h"
+
+#include "storage_backends/filesystem.h"
+
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv,false);
-	Server server;	
+	//we're going to use the filesystem backend by default, for testing
+	FileSystemBackend *backend = new FileSystemBackend();
+	Server server(backend);	
 	if(server.listen(QHostAddress::Any,1234)){
 		std::cout << "server listening on " << server.serverPort() << " \n";	
 	}else{
