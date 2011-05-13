@@ -32,8 +32,16 @@
  **
  ****************************************************************************/
 
-#ifndef FORTUNESERVER_H
-#define FORTUNESERVER_H
+/* Server class
+ * This is the server that listens for new connection
+ * When it gets one, it spawns a new thread to deal with it
+ * It also connects unix signals to qt signals through socketpairs and QSocketListeners
+ * So it can react to unix signals. This is used so it can exit cleanly when given a signal
+ *
+ */
+
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <QStringList>
 #include <QTcpServer>
@@ -58,19 +66,22 @@ class Server : public QTcpServer
 		void handleSigTerm();
 
 	protected:
+		//called on new connection, spawns a thread to deal with it
 		void incomingConnection(int socketDescriptor);
 
 	private:
-
+		//what backend will threads use?
 		FileStorageManager *fileManager;
 
-
+		//used for unix signals
 		static int sighupFd[2];
 		static int sigtermFd[2];
-
+		//listens for signals
 		QSocketNotifier *snHup;
 		QSocketNotifier *snTerm;
 };
+
+//sets up the signal listeners
 static int setup_unix_signal_handlers()
 {
 	struct sigaction hup, term;

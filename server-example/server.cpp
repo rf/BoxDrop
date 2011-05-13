@@ -32,6 +32,15 @@
  **
  ****************************************************************************/
 
+/*
+ * Implementation of Server class, partially taken from QT Threaded Fortune Server example
+ * The server can react to unix signals by sending them through sockets to QtSocketListeners,
+ * this is so the server can cleanly exit on signals
+ *
+ * Other than that, all the server does is spawn threads for each new connection
+ *
+ */
+
 #include "server.h"
 #include "thread.h"
 #include <sys/socket.h>
@@ -43,7 +52,11 @@
 //needed to not get an undefined reference to static members
 int Server::sighupFd[2];
 int Server::sigtermFd[2];
-	Server::Server( FileStorageManager *manager, QObject *parent)
+
+/*
+ * Constructor stores the file manager, creates the socket pairs, and connects them to the listeners
+ */
+Server::Server( FileStorageManager *manager, QObject *parent)
 : QTcpServer(parent)
 {
 	fileManager = manager;
@@ -60,7 +73,8 @@ int Server::sigtermFd[2];
 	connect(snTerm, SIGNAL(activated(int)), this, SLOT(handleSigTerm()));
 }
 
-
+/* spawn a new thread the deal with the new connection
+ */
 void Server::incomingConnection(int socketDescriptor)
 {
 	Thread *thread = new Thread(socketDescriptor, fileManager,this);
@@ -68,19 +82,27 @@ void Server::incomingConnection(int socketDescriptor)
 	thread->start();
 }
 
+/* on SIGUP, send something through our socket
+ */
 void Server::hupSignalHandler(int)
 {
 	char a = 1;
 	::write(sighupFd[0], &a, sizeof(a));
 }
 
+/* on SIGTERM send something through our socket
+ */
 void Server::termSignalHandler(int)
 {
 	char a = 1;
 	::write(sigtermFd[0], &a, sizeof(a));
 }
 
-
+/* This is called when the QtSocketListener for SIGTERM gets something,
+ * so its called when the process gets SIGTERM
+ * 
+ * This closes the server and exits the app
+ */
 void Server::handleSigTerm()
 {
 	snTerm->setEnabled(false);
@@ -94,6 +116,11 @@ void Server::handleSigTerm()
 	snTerm->setEnabled(true);
 }
 
+/* This is called when the QtSocketListener for SIGHUP gets something,
+ * so its called when the process gets SIGHUP
+ * 
+ * This closes the server and exits the app
+ */
 void Server::handleSigHup()
 {
 	snHup->setEnabled(false);
@@ -107,6 +134,8 @@ void Server::handleSigHup()
 	snHup->setEnabled(true);
 }
 
+/* deconstructor just deletes what we allocated
+ */
 Server::~Server(){
 	delete fileManager;
 	delete snHup;

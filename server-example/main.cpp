@@ -54,12 +54,13 @@ int main(int argc, char *argv[])
 	//we're going to use the filesystem backend by default, for testing
 	FileSystemBackend *backend = new FileSystemBackend();
 	Server server(backend);	
+	//setup our signals so the server can exit gracefully
 	setup_unix_signal_handlers();
+	//start server or error out
 	if(server.listen(QHostAddress::Any,1234)){
 		std::cout << "server listening on " << server.serverPort() << " \n";	
 	}else{
 		std::cerr << "Error: " << server.errorString().toStdString() << "\n";
 	}
-	qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 	return app.exec();
 }

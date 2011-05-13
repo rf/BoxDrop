@@ -31,36 +31,39 @@
  **
  ****************************************************************************/
 
- #ifndef FORTUNETHREAD_H
- #define FORTUNETHREAD_H
+/* Thread class, this is what actually proccesses connections from clients
+ * It can use any FileStorageManager backend to actually interact with files
+ */
 
- #include <QThread>
- #include <QTcpSocket>
- #include "message.h"
- #include "filestorage.h"
- #include "defs.h"
+#pragma once
+#include <QThread>
+#include <QTcpSocket>
+#include "message.h"
+#include "filestorage.h"
+#include "defs.h"
 
 
- class Thread : public QThread
- {
-     Q_OBJECT
+class Thread : public QThread
+{
+	Q_OBJECT
 
- public:
-     Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent);
-     virtual ~Thread();
-     void run();
-     void processPing();
-     void processNewFile(Message *msg);
-     
- signals:
-     void error(QTcpSocket::SocketError socketError);
+	public:
+		Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent);
+		virtual ~Thread();
+		/* identifies type of packet, and calls appropriate method
+		 */
+		void run();
 
- private:
-     int socketDescriptor;
-     QTcpSocket *tcpSocket;
-     QString text;
-     FileStorageManager *fileManager;
-     User *user;
- };
+		void processPing();
+		void processNewFile(Message *msg);
 
- #endif
+signals:
+		void error(QTcpSocket::SocketError socketError);
+
+	private:
+		int socketDescriptor;
+		QTcpSocket *tcpSocket;
+		FileStorageManager *fileManager;
+		User *user;
+};
+

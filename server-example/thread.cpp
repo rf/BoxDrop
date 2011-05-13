@@ -32,6 +32,11 @@
  **
  ****************************************************************************/
 
+/* Implementation of Thread class
+ * This is what actually processes each connection to the server
+ * it receives data from the user, processes it, and may write back
+ */
+
 #include "thread.h"
 #include "message.h"
 #include "usermanager.h"
@@ -39,21 +44,30 @@
 
 #include <QtNetwork>
 
-	Thread::Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent)
+/* Constructor just sets our file manager, and figures out what user is connecting
+ */
+Thread::Thread(int socketDescriptor, FileStorageManager *manager, QObject *parent)
 : QThread(parent), socketDescriptor(socketDescriptor)
 {
 	fileManager = manager;
+	//for now, loginUser is just a stub, always returns the same thing
 	user = UserManager::loginUser("username","password");
 }
 
+/* main line of execution in the server. Handles a connection to a client
+ *
+ * This reads data, figure out what kind of packet it is, and may respond to it
+ * or just call various file operations
+ */
 void Thread::run()
 {
-
+	//create and open socket
 	tcpSocket = new QTcpSocket;
 	if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
 		emit error(tcpSocket->error());
 		return;
 	}
+
 	QString clientAddress = tcpSocket->peerAddress().toString();
 	qDebug() << "New connection from " << clientAddress;
 
@@ -88,6 +102,7 @@ void Thread::run()
 	//we now have the whole packet...
 	qDebug() << "The packet was:" << packet;
 	Message *msg = Message::generateMessage(packet);
+	//make sure we can parse it into a valid packet and determin its type
 	if(!msg){
 		qDebug() << "Invalid packet format";	
 	}else if (msg->getType() == PING){
@@ -98,6 +113,7 @@ void Thread::run()
 		qDebug() << "Message has unrecognized type" << msg->getType() << "but was created successfully";
 	}
 	delete msg;
+	//shut down connection and exit thread
 	tcpSocket->disconnectFromHost();
 	if(tcpSocket->state() != QAbstractSocket::UnconnectedState){
 		tcpSocket->waitForDisconnected();
@@ -106,10 +122,16 @@ void Thread::run()
 
 }
 
+/* This is what happens when server is sent a ping packet.
+ * TODO: this should return the dictionary of files and md5sums for this user
+ */
 void Thread::processPing(){
 	qDebug() << "Packet was a ping";
 }
 
+/* This is what happens when the user sends a new file to the server
+ * It identifies the file name, then calls fileManager to actually add the new file 
+ */
 void Thread::processNewFile(Message *msg){
 	//first line is the filename
 	QString filename = msg->body.at(0);
@@ -122,6 +144,7 @@ void Thread::processNewFile(Message *msg){
 
 }
 
+//decontructor
 Thread::~Thread(){
 	delete user;
 	delete tcpSocket;
